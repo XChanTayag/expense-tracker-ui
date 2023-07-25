@@ -1,80 +1,79 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Divider, Space, Table, Tag} from "antd";
 import {Content} from "antd/es/layout/layout";
+import IncomeModal from "../components/modal/IncomeModal";
+import ExpenseModal from "../components/modal/ExpenseModal";
+import {useDispatch, useSelector} from "react-redux";
+import {addTransaction, fetchAllTransactions} from "../redux/actions/transactions";
 
 function Transaction(props) {
+    const transactions = useSelector(state => state.TRANSACTIONS);
+    const [incomeOpen, setIncomeOpen] = useState(false);
+    const [expenseOpen, setExpenseOpen] = useState(false);
+    const [dataSource, setDataSource] = useState([]);
+    const dispatch = useDispatch();
 
     const columns = [
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text) => <a>{text}</a>,
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type',
         },
         {
-            title: 'Age',
-            dataIndex: 'age',
-            key: 'age',
+            title: 'Amount',
+            dataIndex: 'amount',
+            key: 'amount',
         },
         {
-            title: 'Address',
-            dataIndex: 'address',
-            key: 'address',
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'category',
         },
         {
-            title: 'Tags',
-            key: 'tags',
-            dataIndex: 'tags',
-            render: (_, { tags }) => (
-                <>
-                    {tags.map((tag) => {
-                        let color = tag.length > 5 ? 'geekblue' : 'green';
-                        if (tag === 'loser') {
-                            color = 'volcano';
-                        }
-                        return (
-                            <Tag color={color} key={tag}>
-                                {tag.toUpperCase()}
-                            </Tag>
-                        );
-                    })}
-                </>
-            ),
+            title: 'Account',
+            dataIndex: 'account',
+            key: 'account',
+        },
+        {
+            title: 'Remarks',
+            dataIndex: 'remarks',
+            key: 'remarks',
+        },
+        {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
         },
         {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <a>Invite {record.name}</a>
+                    <a>Edit</a>
                     <a>Delete</a>
                 </Space>
             ),
         },
     ];
-    const data = [
-        {
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-            tags: ['nice', 'developer'],
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-            tags: ['loser'],
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-            tags: ['cool', 'teacher'],
-        },
-    ];
+
+    useEffect(() => {
+        dispatch(fetchAllTransactions());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (transactions.result.length !== 0)
+            setDataSource(transactions.result);
+        console.log(transactions.result)
+    }, [transactions.result])
+
+
+    const onCreate = (values) => {
+        console.log('Received values of form: ', values);
+        dispatch(addTransaction(values));
+        setIncomeOpen(false);
+        setExpenseOpen(false);
+    };
+
     return (
         <Content
             style={{
@@ -83,11 +82,40 @@ function Transaction(props) {
             }}
         >
             <Space wrap>
-                <Button type="primary">Income</Button>
-                <Button type="primary">Expense</Button>
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        setIncomeOpen(true);
+                    }}
+                >
+                    Income
+                </Button>
+                <Button
+                    type="primary"
+                    onClick={() => {
+                        setExpenseOpen(true);
+                    }}
+                >
+                    Expense
+                </Button>
             </Space>
+
+            <IncomeModal
+                open={incomeOpen}
+                onCreate={onCreate}
+                onCancel={() => {
+                    setIncomeOpen(false);
+                }}
+            />
+            <ExpenseModal
+                open={expenseOpen}
+                onCreate={onCreate}
+                onCancel={() => {
+                    setExpenseOpen(false);
+                }}
+            />
             <Divider orientation="left">Transactions</Divider>
-            <Table columns={columns} dataSource={data} />
+            <Table columns={columns} dataSource={dataSource}/>
         </Content>
     );
 }

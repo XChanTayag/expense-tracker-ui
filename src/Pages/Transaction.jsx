@@ -115,7 +115,7 @@ function Transaction(props) {
                 }}
             />
             <Divider orientation="left">Transactions</Divider>
-            <Table columns={columns} dataSource={dataSource}/>
+            <Table columns={columns} dataSource={dataSource} sortDirections={['ascend']}/>
         </Content>
     );
 }

@@ -15,7 +15,8 @@ const ExpenseModal = ({open, onCreate, onCancel}) => {
                     .validateFields()
                     .then((values) => {
                         form.resetFields();
-                        onCreate(values);
+                        let data = {type:"Expense", ...values}
+                        onCreate(data);
                     })
                     .catch((info) => {
                         console.log('Validate Failed:', info);

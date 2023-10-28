@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const fetchAllTransactions = () => async (dispatch) => {
     try {
-        axios.get('https://expense-tracker-java-a99adaf25038.herokuapp.com/api/transaction')
+        axios.get('http://localhost:8080/api/transaction')
             .then(function (response) {
                 // handle success
                 dispatch({
@@ -31,7 +31,7 @@ export const addTransaction  = (values) => async (dispatch) => {
         const request = {
             ...values
         }
-        axios.post('https://expense-tracker-java-a99adaf25038.herokuapp.com/api/transaction',request)
+        axios.post('http://localhost:8080/api/transaction',request)
             .then(function (response) {
                 // handle success
                 dispatch({
